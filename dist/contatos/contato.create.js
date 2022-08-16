@@ -1,38 +1,64 @@
 import { Contato } from "./contato.model.js";
 import { ContatoRepositorioLocalStorage } from "./contato.repository.ls.js";
 class ContatoCadastro {
-    constructor(repositorioContato) {
+    constructor(repositorioContato, id) {
         this.repositorioContato = repositorioContato;
         this.configurarElementos();
+        if (id) {
+            this.idSelecionado = id;
+            const contatoSelecionado = this.repositorioContato.selecionarPorId(id);
+            if (contatoSelecionado)
+                this.preencherFormulario(contatoSelecionado);
+        }
     }
     gravarRegistros() {
-        const novoContato = new Contato(this.txtNome.value, this.txtEmail.value, this.txtTelefone.value, this.txtEmpresa.value, this.txtCargo.value);
-        if (this.validarNomeContato(novoContato.nome)) {
+        const contato = this.obterDadosFormularios();
+        if (this.validarNomeContato(contato.nome)) {
             alert("O campo nome não pode ficar vazio!");
             return;
         }
-        if (this.validarEmailContato(novoContato.email)) {
+        if (this.validarEmailContato(contato.email)) {
             alert("E-mail inválido ou campo em branco!");
             return;
         }
-        if (this.validarTelefoneContato(novoContato.telefone)) {
+        if (this.validarTelefoneContato(contato.telefone)) {
             alert("Telefone inválido ou em branco!");
             return;
         }
-        if (this.validarEmpresaContato(novoContato.empresa)) {
+        if (this.validarEmpresaContato(contato.empresa)) {
             alert("O campo empresa não pode ficar em branco!");
             return;
         }
-        if (this.validarCargoContato(novoContato.cargo)) {
+        if (this.validarCargoContato(contato.cargo)) {
             alert("O campo cargo não pode ficar vazio!");
             return;
         }
-        if (this.contatoExistente(novoContato)) {
+        if (this.contatoExistente(contato)) {
             alert("Contato existente!");
             return;
         }
-        this.repositorioContato.inserir(novoContato);
+        if (!contato.id)
+            this.repositorioContato.inserir(contato);
+        else
+            this.repositorioContato.editar(contato.id, contato);
         window.location.href = "contato.list.html";
+    }
+    preencherFormulario(contatoSelecionado) {
+        this.txtNome.value = contatoSelecionado.nome;
+        this.txtEmail.value = contatoSelecionado.email;
+        this.txtTelefone.value = contatoSelecionado.telefone;
+        this.txtEmpresa.value = contatoSelecionado.empresa;
+        this.txtCargo.value = contatoSelecionado.cargo;
+    }
+    obterDadosFormularios() {
+        const nome = this.txtNome.value;
+        const email = this.txtEmail.value;
+        const telefone = this.txtTelefone.value;
+        const empresa = this.txtEmpresa.value;
+        const cargo = this.txtCargo.value;
+        const contato = new Contato(nome, email, telefone, empresa, cargo);
+        contato.id = this.idSelecionado;
+        return contato;
     }
     configurarElementos() {
         this.txtNome = document.getElementById("txtNome");
@@ -53,7 +79,8 @@ class ContatoCadastro {
             nomeContato = contato.nome;
             emailContato = contato.email;
             telefoneContato = contato.telefone;
-            if (nomeContato === contatoAhValidar.nome || emailContato === contatoAhValidar.email || telefoneContato === contatoAhValidar.telefone)
+            if ((contato.id !== contatoAhValidar.id && nomeContato === contatoAhValidar.nome) || (contato.id !== contatoAhValidar.id && emailContato === contatoAhValidar.email)
+                || (contato.id !== contatoAhValidar.id && telefoneContato === contatoAhValidar.telefone))
                 contatoExiste = true;
         });
         return contatoExiste;
@@ -84,4 +111,6 @@ class ContatoCadastro {
         return false;
     }
 }
-new ContatoCadastro(new ContatoRepositorioLocalStorage());
+const params = new URLSearchParams(window.location.search);
+const id = params.get("id");
+new ContatoCadastro(new ContatoRepositorioLocalStorage(), id);

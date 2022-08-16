@@ -1,4 +1,4 @@
-import { Contato } from "./contato.model.js";
+import { Guid } from "../shared/guid.model.js";
 export class ContatoRepositorioLocalStorage {
     constructor() {
         this.localStorage = window.localStorage;
@@ -9,19 +9,28 @@ export class ContatoRepositorioLocalStorage {
         this.localStorage.setItem(("contatos"), tarefasJsonString);
     }
     inserir(registro) {
+        registro.id = new Guid().gerarNovoId();
         this.contatos.push(registro);
         this.gravar();
     }
     editar(id, novoRegistro) {
-        const nada = id;
-        const outroNada = novoRegistro;
+        const indexSelecionado = this.contatos.findIndex(x => x.id === id);
+        this.contatos[indexSelecionado] = {
+            id: id,
+            nome: novoRegistro.nome,
+            email: novoRegistro.email,
+            telefone: novoRegistro.telefone,
+            empresa: novoRegistro.empresa,
+            cargo: novoRegistro.cargo
+        };
+        this.gravar();
     }
     excluir(id) {
-        const nada = id;
+        this.contatos = this.contatos.filter(x => x.id !== id);
+        this.gravar();
     }
     selecionarPorId(id) {
-        const teste = id;
-        return new Contato("", "", "", "", "");
+        return this.contatos.find(x => x.id === id);
     }
     selecionarTodos() {
         const dados = this.localStorage.getItem("contatos");

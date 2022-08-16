@@ -12,8 +12,6 @@ class TarefaCadastro {
         }
     }
     gravarRegistros() {
-        // const prioridade = this.selectPrioridade.value as Prioridade;
-        // const novaTarefa = new Tarefa(this.txtTitulo.value, prioridade);
         const tarefa = this.obterDadosFormularios();
         if (!this.validarTituloTarefa(tarefa)) {
             alert("O campo título não pode fica vazio!");

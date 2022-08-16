@@ -30,10 +30,6 @@ class TarefaCadastro implements IPaginaHTML, IPaginaForm{
 
     gravarRegistros(): void {
 
-        // const prioridade = this.selectPrioridade.value as Prioridade;
-
-        // const novaTarefa = new Tarefa(this.txtTitulo.value, prioridade);
-
         const tarefa = this.obterDadosFormularios();
 
         if(!this.validarTituloTarefa(tarefa)){
