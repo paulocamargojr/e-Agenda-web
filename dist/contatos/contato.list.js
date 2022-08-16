@@ -6,7 +6,7 @@ class ContatoPageList {
         this.atualizaTabela();
     }
     configurarElementos() {
-        this.tabela = document.getElementById("tabela");
+        this.tabela = document.getElementById("listagem");
     }
     atualizaTabela() {
         const contatos = this.repositorioContato.selecionarTodos();

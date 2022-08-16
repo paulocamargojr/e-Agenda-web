@@ -6,11 +6,13 @@ export var Prioridade;
     Prioridade["Alta"] = "Alta";
 })(Prioridade || (Prioridade = {}));
 export class Tarefa extends EntidadeBase {
-    constructor(titulo, prioidade) {
+    constructor(titulo, prioidade, id) {
         super();
+        if (id) {
+            this.id = id;
+        }
         this.titulo = titulo;
         this.prioridade = prioidade;
         this.dataCriacao = new Date();
     }
-    ;
 }

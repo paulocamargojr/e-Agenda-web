@@ -31,6 +31,26 @@ export class ContatoRepositorioLocalStorage implements IRepositorio<Contato>, IR
 
     }
 
+    editar(id: string, novoRegistro: Contato): void {
+
+        const nada = id;
+        const outroNada = novoRegistro;
+        
+    }
+
+    excluir(id: string): void {
+        
+        const nada = id;
+
+    }
+
+    selecionarPorId(id: string): Contato | undefined {
+
+        const teste = id;
+
+        return new Contato("", "", "", "", "");
+    }
+
     selecionarTodos(): Contato[] {
 
         const dados = this.localStorage.getItem("contatos");

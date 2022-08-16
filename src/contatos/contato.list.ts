@@ -17,7 +17,7 @@ class ContatoPageList implements IPaginaHTML, IPageList{
 
     configurarElementos(): void {
         
-        this.tabela = document.getElementById("tabela") as HTMLTableElement;
+        this.tabela = document.getElementById("listagem") as HTMLTableElement;
 
     }
 

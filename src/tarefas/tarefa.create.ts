@@ -10,35 +10,72 @@ class TarefaCadastro implements IPaginaHTML, IPaginaForm{
     private selectPrioridade : HTMLSelectElement;
     private btnSalvar : HTMLButtonElement;
 
-    constructor(private repositorioTaefas : IRepositorio<Tarefa>){
+    private idSelecionado : string;
+
+    constructor(private repositorioTaefas : IRepositorio<Tarefa>, id?: string){
 
         this.configurarElementos();
 
+        if(id){
+
+            this.idSelecionado = id;
+
+            const tarefaSelecionada = this.repositorioTaefas.selecionarPorId(id);
+
+            if(tarefaSelecionada)
+                this.preencherFormulario(tarefaSelecionada);
+
+        }
     }
 
     gravarRegistros(): void {
 
-        const prioridade = this.selectPrioridade.value as Prioridade;
+        // const prioridade = this.selectPrioridade.value as Prioridade;
 
-        const novaTarefa = new Tarefa(this.txtTitulo.value, prioridade);
+        // const novaTarefa = new Tarefa(this.txtTitulo.value, prioridade);
 
-        if(!this.validarTituloTarefa(novaTarefa)){
+        const tarefa = this.obterDadosFormularios();
+
+        if(!this.validarTituloTarefa(tarefa)){
 
             alert("O campo título não pode fica vazio!")
             return;
 
         }
 
-        if(this.tarefaExistente(novaTarefa.titulo)){
+        if(this.tarefaExistente(tarefa)){
 
             alert("Tarefa duplicada!");
             return;
 
         }
 
-        this.repositorioTaefas.inserir(novaTarefa);
+        if(!tarefa.id)
+            this.repositorioTaefas.inserir(tarefa);
+        else   
+            this.repositorioTaefas.editar(tarefa.id, tarefa)
 
         window.location.href = "tarefa.list.html"
+
+    }
+
+    private preencherFormulario(tarefaSelecionada : Tarefa){
+
+        this.txtTitulo.value = tarefaSelecionada.titulo;
+        this.selectPrioridade.value = tarefaSelecionada.prioridade;
+
+    }
+
+    private obterDadosFormularios(): Tarefa{
+
+        const titulo = this.txtTitulo.value;
+        const prioridade = this.selectPrioridade.value as Prioridade;
+
+        const tarefa = new Tarefa(titulo, prioridade);
+
+        tarefa.id = this.idSelecionado;
+
+        return tarefa;
 
     }
     
@@ -52,7 +89,7 @@ class TarefaCadastro implements IPaginaHTML, IPaginaForm{
 
     }
 
-    tarefaExistente(titulo : string) : boolean{
+    tarefaExistente(essaTarefa : Tarefa) : boolean{
 
         const tarefas = this.repositorioTaefas.selecionarTodos();
         let teste : string = "";
@@ -62,7 +99,7 @@ class TarefaCadastro implements IPaginaHTML, IPaginaForm{
 
             teste = tarefa.titulo;
 
-            if(teste === titulo)
+            if(tarefa.id !== essaTarefa.id && teste === essaTarefa.titulo)
                 tarefaExiste = true;
 
             
@@ -80,4 +117,8 @@ class TarefaCadastro implements IPaginaHTML, IPaginaForm{
     }
 }
 
-new TarefaCadastro(new TarefaRepositorioLocalStorage());
+const params = new URLSearchParams(window.location.search);
+
+const id = params.get("id") as string;
+
+new TarefaCadastro(new TarefaRepositorioLocalStorage(), id);
